@@ -1,0 +1,28 @@
+#!/bin/bash
+GREEN='\033[1;32m'
+RED='\033[1;31m'
+NC='\033[0m'
+CYAN='\033[1;36m'
+
+if test $# == 0; then
+    echo "Enter input file"
+    exit 1
+fi
+
+echo -e "${CYAN}Encrypt data..."
+while [ "$1" ]; do
+    echo -e "${GREEN}Test file: $1 ${NC}"
+    for mode in ECB CBC CFB OFB CTR; do
+        ./encrypt.py -m $mode -i meocon $1 ./test_space/$1.encrypt.${mode} 
+        if test $? == 0; then
+            echo "[*] Run with $mode success"
+        else
+            echo -e "[*] ${RED}Run with $mode failure${NC}"
+        fi
+    done
+    shift 1
+done
+
+echo -e "${CYAN}Encrypt data...${NC}"
+
+echo -e "${CYAN}Compare checksum...${NC}"
