@@ -31,9 +31,9 @@ def encrypt(mode, iv, input, output):
                         break
 
                     if len(block) % 16 != 0:
-                        encrypted = aes.encrypt(block + padding * (16 - len(block)))
-                        encrypt_file.write(encrypted)
-                        continue
+                        padding_length = aes.block_size - (len(block) % aes.block_size)
+                        encrypt_file.write(aes.encrypt(block + padding_length * chr(padding_length)))
+                        break
 
                     encrypted = aes.encrypt(block)
                     encrypt_file.write(encrypted)
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         mode = AES.MODE_CBC
     elif mode == 'CFB':
         mode = AES.MODE_CFB
-    elif mode == 'OF
+    elif mode == 'OFB':
         mode = AES.MODE_OFB
     elif mode == 'CTR':
         mode = AES.MODE_CTR
@@ -104,4 +104,3 @@ if __name__ == '__main__':
         print '"{}" mode is in valid'.format(mode)
 
     encrypt(mode, iv, args[0], args[1])
-    pass

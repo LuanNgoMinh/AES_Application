@@ -25,14 +25,16 @@ def decrypt(mode, encrypt_filename, output):
             else:
                 aes = AES.new(key, mode, iv)
 
+            next_block = ''
             while True:
-                block = encrypt_file.read(AES.block_size)
-                if len(block) == 0:
+                block, next_block = next_block, aes.decrypt(encrypt_file.read(AES.block_size))
+                if len(next_block) == 0: 
+                    padding_length = ord(block[-1])
+                    block = block[:-padding_length]
+                    decrypt_file.write(block)
                     break
-
-                decrypted = aes.decrypt(block)
-                decrypt_file.write(decrypted)
-                # decrypt_file.truncate(size)
+                    
+                decrypt_file.write(block)
                 
             decrypt_file.close()
             encrypt_file.close()
