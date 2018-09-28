@@ -103,4 +103,5 @@ if __name__ == '__main__':
     else:
         print '"{}" mode is in valid'.format(mode)
 
+    print 'Encrypt {} with {} mode'.format(args[0], dict_opt['-m'])
     encrypt(mode, iv, args[0], args[1])

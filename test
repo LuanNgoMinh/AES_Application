@@ -3,6 +3,7 @@ GREEN='\033[1;32m'
 RED='\033[1;31m'
 NC='\033[0m'
 CYAN='\033[1;36m'
+PURPE='\033[1;35m'
 
 if test $# == 0; then
     echo "Enter input file"
@@ -11,8 +12,11 @@ fi
 
 while [ "$1" ]; do
     echo -e "${GREEN}Test file: $1 ${NC}"
+    originHash=`sha256sum $1 | cut -d " " -f 1`
+    echo "sha256sum: ${originHash}"
+
     for mode in ECB CBC CFB OFB CTR; do
-        echo -e "${CYAN}Encrypt data..."
+        echo -e "${CYAN}Encrypt $1 in $mode mode...${NC}"
 
         filename=$(basename -- "${1}")
         ex="${filename##*.}"
@@ -22,7 +26,8 @@ while [ "$1" ]; do
         if test $? == 0; then
             echo "[*] Encrypt with $mode success"
         else
-            echo -e "[*] ${RED}Encrypt with $mode failure${NC}"
+            echo -e "${RED}[*] Encrypt with $mode failure${NC}"
+            continue
         fi
 
         echo -e "${CYAN}Decrypt data...${NC}"
@@ -32,9 +37,18 @@ while [ "$1" ]; do
             echo "[*] Decrypt with $mode success"
         else
             echo -e "[*] ${RED}Decrypt with $mode failure${NC}"
+            continue
         fi
 
-        # echo -e "${CYAN}Compare checksum...${NC}"
+        echo -e "${CYAN}Compare checksum...${NC}"  
+        decryptHash=`sha256sum ./test_space/$1.decrypt.$mode.$ex | cut -d " " -f 1`
+        
+        if [ $decryptHash == $originHash ]; then
+            echo -e "${PURPE}-> $mode true: $1${NC}"
+        else 
+            echo "${RED}-> $mode false: $1${NC}"
+        fi
+
     done
     shift 1
 done
