@@ -38,6 +38,7 @@ def decrypt(mode, encrypt_filename, output):
                 
             decrypt_file.close()
             encrypt_file.close()
+    print 'Decrypt success'
     pass
 
 
