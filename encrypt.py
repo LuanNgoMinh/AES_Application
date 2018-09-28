@@ -56,28 +56,28 @@ def usage():
 if __name__ == '__main__':
     if len(sys.argv) != 7:
         usage()
-        exit()
+        exit(1)
 
-    mode, iv, input, output = None, None, '', ''
+    mode, iv = None, None
     
     #Getopt
     try:
         optlist, args = getopt.getopt(sys.argv[1:], 'm:i:')
     except getopt.error:
-        print 'Parse options error'
-        exit()
+        print 'Get options error'
+        exit(2)
 
     #Check file name options    
     if len(args) != 2:
         print 'File name error'
         usage()
-        exit()
+        exit(1)
 
     #check optlist
     if len(optlist) != 2:
         print 'Optlist error'
         usage()
-        exit()
+        exit(1)
 
     dict_opt = dict((o, a) for o, a in optlist)
     mode = dict_opt['-m']
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     #check input file has existed yet
     if not os.path.isfile(args[0]):
         print '"{}" file has not existed yet'.format(args[0])
-        exit()
+        exit(3)
     
     #check mode valid
     mode = mode.upper()
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         mode = AES.MODE_CBC
     elif mode == 'CFB':
         mode = AES.MODE_CFB
-    elif mode == 'OFB':
+    elif mode == 'OF
         mode = AES.MODE_OFB
     elif mode == 'CTR':
         mode = AES.MODE_CTR

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # decrypt.py –m <mode> <tên file input> <tên file output>
-import sys, struct
+import os, getopt, sys, struct
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util import Counter
@@ -39,8 +39,62 @@ def decrypt(mode, encrypt_filename, output):
     pass
 
 
+def usage():
+    print \
+    '''Usage:\n\n\tpython encrypt.py or ./encrypt.py -m <mode> <input file name> <output file name>
+\n\t-mode: mode to encryption: ECB, CBC, CFB, OFB, CTR, OPENPGP
+\nExample: ./decrypt.py -m CFB meomeo.text meomeo.decrypted
+    '''
+
+
 if __name__ == '__main__':
-    mode = AES.MODE_ECB
-    decrypt(mode, "HenMotMai.text.encrypted", "HenMotMai.text.decrypt")
-    # decrypt(mode, "meo.jpg", "meo.decrypt.jpg")
+    if len(sys.argv) != 5:
+        print usage()
+        exit(1)
+
+    mode = None
+
+    #get options list
+    try:
+        optlist, args = getopt.getopt(sys.argv[1:], 'm:')
+    except optlist.error:
+        print "Get options error"
+        exit(2)
+
+    #check options list
+    if len(optlist) != 1:
+        print 'Options lists error'
+        usage()
+        exit(1)
+
+    if len(args) != 2:
+        print 'File name error'
+        usage()
+        exit(1)
+
+    #check input file has existed yet
+    if not os.path.isfile(args[0]):
+        print '"{}" file has not existed yet'.format(args[0])
+        exit(3)
+
+    dict_opt = dict((o, a) for o, a in optlist)
+    mode = dict_opt['-m']
+
+    #check mode valid
+    mode = mode.upper()
+    if mode == 'ECB':
+        mode = AES.MODE_ECB
+    elif mode == 'CBC':
+        mode = AES.MODE_CBC
+    elif mode == 'CFB':
+        mode = AES.MODE_CFB
+    elif mode == 'OFB':
+        mode = AES.MODE_OFB
+    elif mode == 'CTR':
+        mode = AES.MODE_CTR
+    else:
+        print '"{}" mode is in valid'.format(mode)
+
+    print 'Decrypt {} with {} mode'.format(args[0], dict_opt['-m'])
+    decrypt(mode, args[0], args[1])
     pass
